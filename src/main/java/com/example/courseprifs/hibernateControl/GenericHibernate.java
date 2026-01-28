@@ -85,8 +85,11 @@ public class GenericHibernate {
             query.select(query.from(entityClass));
             Query q = entityManager.createQuery(query);
             list = q.getResultList();
+            entityManager.getTransaction().commit();
         } catch (Exception e) {
             //alerto reiks
+        } finally {
+            if (entityManager != null) entityManager.close();
         }
         return list;
     }

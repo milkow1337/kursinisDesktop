@@ -36,4 +36,9 @@ public class Cuisine {
         this.vegan = vegan;
         this.restaurant = restaurant;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

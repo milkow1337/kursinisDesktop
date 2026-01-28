@@ -6,6 +6,7 @@ import com.example.courseprifs.model.*;
 import jakarta.persistence.EntityManagerFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -99,18 +100,12 @@ public class MainForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("MainForm initialize() called");
         initializeUserTable();
         initializeOrderStatusField();
         initializeSearchRoleField();
     }
 
     private void initializeUserTable() {
-        if (userTable == null) {
-            System.out.println("WARNING: userTable is null in initializeUserTable()");
-            return;
-        }
-
         userTable.setEditable(true);
 
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -239,38 +234,11 @@ public class MainForm implements Initializable {
     }
 
     public void setData(EntityManagerFactory entityManagerFactory, User user) {
-        System.out.println("setData() called with user: " + user.getLogin());
         this.entityManagerFactory = entityManagerFactory;
         this.currentUser = user;
         this.customHibernate = new CustomHibernate(entityManagerFactory);
-
         setUserFormVisibility();
-
-        // CRITICAL FIX: Load initial data for the default selected tab
-        loadInitialData();
-    }
-
-    /**
-     * CRITICAL FIX: Load data for the initially selected tab
-     */
-    private void loadInitialData() {
-        System.out.println("loadInitialData() called");
-
-        // Load data for user tab if it's selected and not disabled
-        if (userTab != null && userTab.isSelected() && !userTab.isDisabled()) {
-            System.out.println("Loading user data on initial load");
-            loadUserData();
-        }
-        // Load data for order management tab if it's the first non-disabled tab
-        else if (managementTab != null && managementTab.isSelected() && !managementTab.isDisabled()) {
-            System.out.println("Loading order data on initial load");
-            loadOrderData();
-        }
-        // Load data for cuisine tab if it's the first non-disabled tab
-        else if (foodTab != null && foodTab.isSelected() && !foodTab.isDisabled()) {
-            System.out.println("Loading cuisine data on initial load");
-            loadCuisineData();
-        }
+        reloadTableData();
     }
 
     private void setUserFormVisibility() {
@@ -279,10 +247,20 @@ public class MainForm implements Initializable {
             if (userTab != null) {
                 userTab.setDisable(true);
             }
+            // Chat tab is enabled for Restaurants, but editing is disabled
             if (chatTab != null) {
-                chatTab.setDisable(true);
+                chatTab.setDisable(false);
             }
-            // Make order management tab the default for restaurants
+            
+            // Disable delete options in context menus for Restaurants
+            if (allChats != null && allChats.getContextMenu() != null) {
+                allChats.getContextMenu().getItems().forEach(item -> item.setDisable(true));
+            }
+            if (chatMessages != null && chatMessages.getContextMenu() != null) {
+                chatMessages.getContextMenu().getItems().forEach(item -> item.setDisable(true));
+            }
+
+            // Set Order Management as default tab for Restaurant
             if (managementTab != null) {
                 managementTab.getTabPane().getSelectionModel().select(managementTab);
             }
@@ -294,67 +272,64 @@ public class MainForm implements Initializable {
             if (chatTab != null) {
                 chatTab.setDisable(true);
             }
-            // Make order management tab the default for non-admin users
-            if (managementTab != null) {
-                managementTab.getTabPane().getSelectionModel().select(managementTab);
-            }
+        }
+    }
+
+    public void logOff() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login-form.fxml"));
+            Parent parent = fxmlLoader.load();
+            Scene scene = new Scene(parent);
+            Stage stage = (Stage) userTable.getScene().getWindow();
+            stage.setTitle("CourseWork");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            FxUtils.generateDialogAlert(Alert.AlertType.ERROR, "Error logging off", e);
         }
     }
 
     //<editor-fold desc="User Tab Functionality">
     public void reloadTableData() {
-        System.out.println("reloadTableData() called");
+        if (customHibernate == null) {
+            return;
+        }
 
         if (userTab != null && userTab.isSelected()) {
-            System.out.println("Reloading user tab data");
             loadUserData();
         } else if (managementTab != null && managementTab.isSelected()) {
-            System.out.println("Reloading order tab data");
             loadOrderData();
         } else if (foodTab != null && foodTab.isSelected()) {
-            System.out.println("Reloading cuisine tab data");
             loadCuisineData();
         } else if (chatTab != null && chatTab.isSelected()) {
-            System.out.println("Reloading chat tab data");
             loadChatData();
         } else if (reviewTab != null && reviewTab.isSelected()) {
-            System.out.println("Reloading review tab data");
             loadReviewData();
         }
     }
 
     private void loadUserData() {
-        try {
-            System.out.println("loadUserData() started");
-            userData.clear();
-            List<User> users = customHibernate.getAllRecords(User.class);
-            System.out.println("Found " + users.size() + " users in database");
+        userData.clear();
+        List<User> users = customHibernate.getAllRecords(User.class);
 
-            for (User u : users) {
-                UserTableParameters userParam = new UserTableParameters();
-                userParam.setId(u.getId());
-                userParam.setUserType(u.getClass().getSimpleName());
-                userParam.setLogin(u.getLogin());
-                userParam.setPassword(u.getPassword());
-                userParam.setName(u.getName());
-                userParam.setSurname(u.getSurname());
-                userParam.setPhoneNum(u.getPhoneNumber());
+        for (User u : users) {
+            UserTableParameters userParam = new UserTableParameters();
+            userParam.setId(u.getId());
+            userParam.setUserType(u.getClass().getSimpleName());
+            userParam.setLogin(u.getLogin());
+            userParam.setPassword(u.getPassword());
+            userParam.setName(u.getName());
+            userParam.setSurname(u.getSurname());
+            userParam.setPhoneNum(u.getPhoneNumber());
 
-                if (u instanceof BasicUser) {
-                    userParam.setAddress(((BasicUser) u).getAddress());
-                }
-
-                userData.add(userParam);
-                System.out.println("Added user: " + u.getLogin());
+            if (u instanceof BasicUser) {
+                userParam.setAddress(((BasicUser) u).getAddress());
             }
 
-            userTable.setItems(userData);
-            System.out.println("User table items set. Total: " + userData.size());
-        } catch (Exception e) {
-            System.err.println("Error loading user data: " + e.getMessage());
-            e.printStackTrace();
-            FxUtils.generateDialogAlert(Alert.AlertType.ERROR, "Error loading user data", e);
+            userData.add(userParam);
         }
+
+        userTable.setItems(userData);
     }
 
     public void searchUsers() {
@@ -404,41 +379,22 @@ public class MainForm implements Initializable {
 
     //<editor-fold desc="Order Tab Functionality">
     private void loadOrderData() {
-        try {
-            System.out.println("loadOrderData() started");
-            clearAllOrderFields();
+        clearAllOrderFields();
 
-            List<FoodOrder> foodOrders = getFoodOrders();
-            System.out.println("Found " + foodOrders.size() + " orders");
-            ordersList.getItems().addAll(foodOrders);
+        List<FoodOrder> foodOrders = getFoodOrders();
+        ordersList.getItems().addAll(foodOrders);
 
-            List<BasicUser> clients = customHibernate.getAllRecords(BasicUser.class);
-            System.out.println("Found " + clients.size() + " clients");
-            clientList.getItems().addAll(clients);
+        clientList.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
+        restaurantField.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
+        driverField.getItems().addAll(customHibernate.getAllRecords(Driver.class));
+        orderStatusField.getItems().clear();
+        orderStatusField.getItems().addAll(OrderStatus.values());
 
-            List<Restaurant> restaurants = customHibernate.getAllRecords(Restaurant.class);
-            System.out.println("Found " + restaurants.size() + " restaurants");
-            restaurantField.getItems().addAll(restaurants);
-
-            List<Driver> drivers = customHibernate.getAllRecords(Driver.class);
-            System.out.println("Found " + drivers.size() + " drivers");
-            driverField.getItems().addAll(drivers);
-
-            orderStatusField.getItems().clear();
-            orderStatusField.getItems().addAll(OrderStatus.values());
-
-            // Load filter options
-            filterStatus.getItems().add(null); // For "All"
-            filterStatus.getItems().addAll(OrderStatus.values());
-            filterRestaurant.getItems().add(null); // For "All"
-            filterRestaurant.getItems().addAll(restaurants);
-
-            System.out.println("Order data loaded successfully");
-        } catch (Exception e) {
-            System.err.println("Error loading order data: " + e.getMessage());
-            e.printStackTrace();
-            FxUtils.generateDialogAlert(Alert.AlertType.ERROR, "Error loading order data", e);
-        }
+        // Load filter options
+        filterStatus.getItems().add(null); // For "All"
+        filterStatus.getItems().addAll(OrderStatus.values());
+        filterRestaurant.getItems().add(null); // For "All"
+        filterRestaurant.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
     }
 
     private List<FoodOrder> getFoodOrders() {
@@ -748,17 +704,8 @@ public class MainForm implements Initializable {
 
     //<editor-fold desc="Cuisine Tab Functionality">
     private void loadCuisineData() {
-        try {
-            System.out.println("loadCuisineData() started");
-            clearAllCuisineFields();
-            List<Restaurant> restaurants = customHibernate.getAllRecords(Restaurant.class);
-            System.out.println("Found " + restaurants.size() + " restaurants for cuisine");
-            restaurantList.getItems().addAll(restaurants);
-        } catch (Exception e) {
-            System.err.println("Error loading cuisine data: " + e.getMessage());
-            e.printStackTrace();
-            FxUtils.generateDialogAlert(Alert.AlertType.ERROR, "Error loading cuisine data", e);
-        }
+        clearAllCuisineFields();
+        restaurantList.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
     }
 
     private void clearAllCuisineFields() {
@@ -916,17 +863,8 @@ public class MainForm implements Initializable {
 
     //<editor-fold desc="Chat Tab Functionality">
     private void loadChatData() {
-        try {
-            System.out.println("loadChatData() started");
-            allChats.getItems().clear();
-            List<Chat> chats = customHibernate.getAllRecords(Chat.class);
-            System.out.println("Found " + chats.size() + " chats");
-            allChats.getItems().addAll(chats);
-        } catch (Exception e) {
-            System.err.println("Error loading chat data: " + e.getMessage());
-            e.printStackTrace();
-            FxUtils.generateDialogAlert(Alert.AlertType.ERROR, "Error loading chat data", e);
-        }
+        allChats.getItems().clear();
+        allChats.getItems().addAll(customHibernate.getAllRecords(Chat.class));
     }
 
     public void loadChatMessages() {
@@ -1003,30 +941,20 @@ public class MainForm implements Initializable {
 
     //<editor-fold desc="Review Tab Functionality">
     private void loadReviewData() {
-        try {
-            System.out.println("loadReviewData() started");
-            reviewList.getItems().clear();
-            List<Review> reviews = customHibernate.getAllRecords(Review.class);
-            System.out.println("Found " + reviews.size() + " reviews");
-            reviewList.getItems().addAll(reviews);
+        reviewList.getItems().clear();
+        reviewList.getItems().addAll(customHibernate.getAllRecords(Review.class));
 
-            reviewCommentOwner.getItems().clear();
-            List<BasicUser> users = customHibernate.getAllRecords(BasicUser.class);
-            reviewCommentOwner.getItems().addAll(users);
+        reviewCommentOwner.getItems().clear();
+        reviewCommentOwner.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
 
-            reviewFeedbackUser.getItems().clear();
-            reviewFeedbackUser.getItems().addAll(users);
+        reviewFeedbackUser.getItems().clear();
+        reviewFeedbackUser.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
 
-            // Initialize rating slider
-            if (ratingSlider != null) {
-                ratingSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-                    ratingLabel.setText(String.format("Rating: %d", newVal.intValue()));
-                });
-            }
-        } catch (Exception e) {
-            System.err.println("Error loading review data: " + e.getMessage());
-            e.printStackTrace();
-            FxUtils.generateDialogAlert(Alert.AlertType.ERROR, "Error loading review data", e);
+        // Initialize rating slider
+        if (ratingSlider != null) {
+            ratingSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                ratingLabel.setText(String.format("Rating: %d", newVal.intValue()));
+            });
         }
     }
 

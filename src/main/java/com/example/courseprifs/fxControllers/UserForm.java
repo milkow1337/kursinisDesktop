@@ -9,6 +9,8 @@ import javafx.scene.control.*;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
 public class UserForm implements Initializable {
@@ -26,6 +28,14 @@ public class UserForm implements Initializable {
     @FXML public TextField phoneField;
     @FXML public TextField addressField;
 
+    // Restaurant-specific fields
+    @FXML public Label restaurantNameLabel;
+    @FXML public TextField restaurantNameField;
+    @FXML public Label openingTimeLabel;
+    @FXML public TextField openingTimeField;
+    @FXML public Label closingTimeLabel;
+    @FXML public TextField closingTimeField;
+
     // Driver-specific fields
     @FXML public Label licenceLabel;
     @FXML public TextField licenceField;
@@ -36,7 +46,6 @@ public class UserForm implements Initializable {
 
     @FXML public Button saveButton;
     @FXML public Button updateButton;
-    @FXML public CheckBox isAdminCheck;
 
     private EntityManagerFactory entityManagerFactory;
     private GenericHibernate genericHibernate;
@@ -59,6 +68,7 @@ public class UserForm implements Initializable {
             userRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     toggleDriverFields(false);
+                    toggleRestaurantFields(false);
                     addressField.setDisable(true);
                 }
             });
@@ -68,6 +78,7 @@ public class UserForm implements Initializable {
             restaurantRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     toggleDriverFields(false);
+                    toggleRestaurantFields(true);
                     addressField.setDisable(false);
                 }
             });
@@ -77,6 +88,7 @@ public class UserForm implements Initializable {
             clientRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     toggleDriverFields(false);
+                    toggleRestaurantFields(false);
                     addressField.setDisable(false);
                 }
             });
@@ -86,6 +98,7 @@ public class UserForm implements Initializable {
             driverRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     toggleDriverFields(true);
+                    toggleRestaurantFields(false);
                     addressField.setDisable(false);
                 }
             });
@@ -120,6 +133,33 @@ public class UserForm implements Initializable {
         }
     }
 
+    private void toggleRestaurantFields(boolean show) {
+        if (restaurantNameLabel != null) {
+            restaurantNameLabel.setVisible(show);
+            restaurantNameLabel.setManaged(show);
+        }
+        if (restaurantNameField != null) {
+            restaurantNameField.setVisible(show);
+            restaurantNameField.setManaged(show);
+        }
+        if (openingTimeLabel != null) {
+            openingTimeLabel.setVisible(show);
+            openingTimeLabel.setManaged(show);
+        }
+        if (openingTimeField != null) {
+            openingTimeField.setVisible(show);
+            openingTimeField.setManaged(show);
+        }
+        if (closingTimeLabel != null) {
+            closingTimeLabel.setVisible(show);
+            closingTimeLabel.setManaged(show);
+        }
+        if (closingTimeField != null) {
+            closingTimeField.setVisible(show);
+            closingTimeField.setManaged(show);
+        }
+    }
+
     public void setData(EntityManagerFactory entityManagerFactory, User user, boolean isForUpdate) {
         this.entityManagerFactory = entityManagerFactory;
         this.genericHibernate = new GenericHibernate(entityManagerFactory);
@@ -139,7 +179,7 @@ public class UserForm implements Initializable {
             nameField.setText(userForUpdate.getName());
             surnameField.setText(userForUpdate.getSurname());
             phoneField.setText(userForUpdate.getPhoneNumber());
-            isAdminCheck.setSelected(userForUpdate.isAdmin());
+            // isAdminCheck.setSelected(userForUpdate.isAdmin()); // Removed isAdminCheck
 
             // Select appropriate radio button and fill type-specific fields
             if (userForUpdate instanceof Driver) {
@@ -150,16 +190,26 @@ public class UserForm implements Initializable {
                 birthdatePicker.setValue(driver.getBDate());
                 vehicleTypeCombo.setValue(driver.getVehicleType());
                 toggleDriverFields(true);
+                toggleRestaurantFields(false);
             } else if (userForUpdate instanceof Restaurant) {
                 restaurantRadio.setSelected(true);
                 Restaurant restaurant = (Restaurant) userForUpdate;
                 addressField.setText(restaurant.getAddress());
+                restaurantNameField.setText(restaurant.getRestaurantName());
+                if (restaurant.getOpeningTime() != null) openingTimeField.setText(restaurant.getOpeningTime().toString());
+                if (restaurant.getClosingTime() != null) closingTimeField.setText(restaurant.getClosingTime().toString());
+                toggleDriverFields(false);
+                toggleRestaurantFields(true);
             } else if (userForUpdate instanceof BasicUser) {
                 clientRadio.setSelected(true);
                 BasicUser basicUser = (BasicUser) userForUpdate;
                 addressField.setText(basicUser.getAddress());
-            } else {
+                toggleDriverFields(false);
+                toggleRestaurantFields(false);
+            } else { // Base User
                 userRadio.setSelected(true);
+                toggleDriverFields(false);
+                toggleRestaurantFields(false);
             }
 
             // Disable radio buttons when updating
@@ -219,7 +269,7 @@ public class UserForm implements Initializable {
             userForUpdate.setName(nameField.getText());
             userForUpdate.setSurname(surnameField.getText());
             userForUpdate.setPhoneNumber(phoneField.getText());
-            userForUpdate.setAdmin(isAdminCheck.isSelected());
+            // userForUpdate.setAdmin(isAdminCheck.isSelected()); // Removed isAdminCheck
 
             // Update type-specific fields
             if (userForUpdate instanceof BasicUser) {
@@ -231,6 +281,13 @@ public class UserForm implements Initializable {
                 driver.setLicence(licenceField.getText());
                 driver.setBDate(birthdatePicker.getValue());
                 driver.setVehicleType(vehicleTypeCombo.getValue());
+            }
+
+            if (userForUpdate instanceof Restaurant) {
+                Restaurant restaurant = (Restaurant) userForUpdate;
+                restaurant.setRestaurantName(restaurantNameField.getText());
+                restaurant.setOpeningTime(LocalTime.parse(openingTimeField.getText()));
+                restaurant.setClosingTime(LocalTime.parse(closingTimeField.getText()));
             }
 
             genericHibernate.update(userForUpdate);
@@ -252,16 +309,24 @@ public class UserForm implements Initializable {
         String surname = surnameField.getText().trim();
         String phone = phoneField.getText().trim();
         String address = addressField.getText().trim();
-        boolean isAdmin = isAdminCheck.isSelected();
+        // boolean isAdmin = isAdminCheck.isSelected(); // Removed isAdminCheck
 
         User user = null;
 
         if (userRadio.isSelected()) {
             user = new User(username, password, name, surname, phone);
+            // Force admin for User type
+            user.setAdmin(true);
         } else if (restaurantRadio.isSelected()) {
-            user = new Restaurant(username, password, name, surname, phone, address);
+            String restaurantName = restaurantNameField.getText().trim();
+            LocalTime openingTime = LocalTime.parse(openingTimeField.getText().trim());
+            LocalTime closingTime = LocalTime.parse(closingTimeField.getText().trim());
+            
+            user = new Restaurant(username, password, name, surname, phone, address, restaurantName, openingTime, closingTime);
+            user.setAdmin(false); // Restaurants are not admins by default
         } else if (clientRadio.isSelected()) {
             user = new BasicUser(username, password, name, surname, phone, address);
+            user.setAdmin(false); // BasicUsers are not admins by default
         } else if (driverRadio.isSelected()) {
             String licence = licenceField.getText().trim();
             LocalDate birthdate = birthdatePicker.getValue();
@@ -275,10 +340,7 @@ public class UserForm implements Initializable {
 
             user = new Driver(username, password, name, surname, phone, address,
                     licence, birthdate, vehicleType);
-        }
-
-        if (user != null) {
-            user.setAdmin(isAdmin);
+            user.setAdmin(false); // Drivers are not admins by default
         }
 
         return user;
@@ -348,6 +410,31 @@ public class UserForm implements Initializable {
             if (birthdatePicker.getValue().isAfter(minDate)) {
                 FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Age Requirement",
                         "Driver must be at least 18 years old.");
+                return false;
+            }
+        }
+
+        // Additional validation for restaurant fields
+        if (restaurantRadio.isSelected()) {
+            if (restaurantNameField.getText().trim().isEmpty()) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Missing Information",
+                        "Please enter a restaurant name.");
+                return false;
+            }
+            
+            try {
+                LocalTime.parse(openingTimeField.getText().trim());
+            } catch (DateTimeParseException e) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Invalid Time Format",
+                        "Please enter opening time in HH:mm format (e.g., 09:00).");
+                return false;
+            }
+            
+            try {
+                LocalTime.parse(closingTimeField.getText().trim());
+            } catch (DateTimeParseException e) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Invalid Time Format",
+                        "Please enter closing time in HH:mm format (e.g., 22:00).");
                 return false;
             }
         }

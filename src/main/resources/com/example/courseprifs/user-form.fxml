@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="550.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.courseprifs.fxControllers.UserForm">
+<AnchorPane prefHeight="600.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.courseprifs.fxControllers.UserForm">
    <children>
       <VBox spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
@@ -55,20 +55,27 @@
                   <Label text="Address:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
                   <TextField fx:id="addressField" GridPane.rowIndex="5" GridPane.columnIndex="1" promptText="Enter address"/>
 
+                  <!-- Restaurant-specific fields (initially hidden) -->
+                  <Label fx:id="restaurantNameLabel" text="Restaurant Name:" GridPane.rowIndex="6" GridPane.columnIndex="0" visible="false" managed="false"/>
+                  <TextField fx:id="restaurantNameField" GridPane.rowIndex="6" GridPane.columnIndex="1" promptText="Enter restaurant name" visible="false" managed="false"/>
+
+                  <Label fx:id="openingTimeLabel" text="Opening Time:" GridPane.rowIndex="7" GridPane.columnIndex="0" visible="false" managed="false"/>
+                  <TextField fx:id="openingTimeField" GridPane.rowIndex="7" GridPane.columnIndex="1" promptText="HH:mm" visible="false" managed="false"/>
+
+                  <Label fx:id="closingTimeLabel" text="Closing Time:" GridPane.rowIndex="8" GridPane.columnIndex="0" visible="false" managed="false"/>
+                  <TextField fx:id="closingTimeField" GridPane.rowIndex="8" GridPane.columnIndex="1" promptText="HH:mm" visible="false" managed="false"/>
+
                   <!-- Driver-specific fields (initially hidden) -->
-                  <Label fx:id="licenceLabel" text="License #:" GridPane.rowIndex="6" GridPane.columnIndex="0" visible="false" managed="false"/>
-                  <TextField fx:id="licenceField" GridPane.rowIndex="6" GridPane.columnIndex="1" promptText="Enter license number" visible="false" managed="false"/>
+                  <Label fx:id="licenceLabel" text="License #:" GridPane.rowIndex="9" GridPane.columnIndex="0" visible="false" managed="false"/>
+                  <TextField fx:id="licenceField" GridPane.rowIndex="9" GridPane.columnIndex="1" promptText="Enter license number" visible="false" managed="false"/>
 
-                  <Label fx:id="birthdateLabel" text="Birth Date:" GridPane.rowIndex="7" GridPane.columnIndex="0" visible="false" managed="false"/>
-                  <DatePicker fx:id="birthdatePicker" GridPane.rowIndex="7" GridPane.columnIndex="1" promptText="Select birth date" prefWidth="280.0" visible="false" managed="false"/>
+                  <Label fx:id="birthdateLabel" text="Birth Date:" GridPane.rowIndex="10" GridPane.columnIndex="0" visible="false" managed="false"/>
+                  <DatePicker fx:id="birthdatePicker" GridPane.rowIndex="10" GridPane.columnIndex="1" promptText="Select birth date" prefWidth="280.0" visible="false" managed="false"/>
 
-                  <Label fx:id="vehicleLabel" text="Vehicle Type:" GridPane.rowIndex="8" GridPane.columnIndex="0" visible="false" managed="false"/>
-                  <ComboBox fx:id="vehicleTypeCombo" GridPane.rowIndex="8" GridPane.columnIndex="1" prefWidth="280.0" promptText="Select vehicle type" visible="false" managed="false"/>
+                  <Label fx:id="vehicleLabel" text="Vehicle Type:" GridPane.rowIndex="11" GridPane.columnIndex="0" visible="false" managed="false"/>
+                  <ComboBox fx:id="vehicleTypeCombo" GridPane.rowIndex="11" GridPane.columnIndex="1" prefWidth="280.0" promptText="Select vehicle type" visible="false" managed="false"/>
                </children>
             </GridPane>
-
-            <!-- Admin Checkbox -->
-            <CheckBox fx:id="isAdminCheck" text="Administrator privileges"/>
 
             <!-- Buttons -->
             <HBox spacing="10.0" alignment="CENTER">

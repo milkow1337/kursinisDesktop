@@ -28,7 +28,7 @@ public class FoodOrder {
     @ManyToOne
     private Driver driver; // Added driver assignment
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Cuisine> cuisineList;
 
     @OneToOne(cascade = CascadeType.ALL)

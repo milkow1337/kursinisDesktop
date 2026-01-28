@@ -2,6 +2,7 @@ package com.example.courseprifs.fxControllers;
 
 import com.example.courseprifs.HelloApplication;
 import com.example.courseprifs.hibernateControl.CustomHibernate;
+import com.example.courseprifs.model.Restaurant;
 import com.example.courseprifs.model.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -30,19 +31,25 @@ public class LoginForm {
     public void validateAndLoad() throws IOException {
         CustomHibernate customHibernate = new CustomHibernate(entityManagerFactory);
         User user = customHibernate.getUserByCredentials(loginField.getText(), passwordField.getText());
+        
         if (user != null) {
+            // Restriction: Only allow Restaurant and strict User (not BasicUser or Driver)
+            if (user instanceof Restaurant || user.getClass().equals(User.class)) {
+                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("main-form.fxml"));
+                Parent parent = fxmlLoader.load();
 
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("main-form.fxml"));
-            Parent parent = fxmlLoader.load();
+                MainForm mainForm = fxmlLoader.getController();
+                mainForm.setData(entityManagerFactory, user);
 
-            MainForm mainForm = fxmlLoader.getController();
-            mainForm.setData(entityManagerFactory, user);
-
-            Scene scene = new Scene(parent);
-            Stage stage = (Stage) loginField.getScene().getWindow();
-            stage.setTitle("Hello!");
-            stage.setScene(scene);
-            stage.show();
+                Scene scene = new Scene(parent);
+                Stage stage = (Stage) loginField.getScene().getWindow();
+                stage.setTitle("Hello!");
+                stage.setScene(scene);
+                stage.show();
+            } else {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Access Denied", "Login Restricted", 
+                        "Only Restaurants and Administrators can log in here.");
+            }
         } else {
             FxUtils.generateAlert(Alert.AlertType.WARNING, "Warning", "Something went wrong during login", "No such user or wrong credentials");
         }

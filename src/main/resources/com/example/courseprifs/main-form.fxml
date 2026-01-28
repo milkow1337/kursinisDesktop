@@ -246,5 +246,6 @@
                 </Tab>
             </tabs>
         </TabPane>
+        <Button text="Log off" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="2.0" onAction="#logOff"/>
     </children>
 </AnchorPane>
