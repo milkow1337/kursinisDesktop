@@ -27,8 +27,11 @@ public class UserForm implements Initializable {
     @FXML public TextField addressField;
 
     // Driver-specific fields
+    @FXML public Label licenceLabel;
     @FXML public TextField licenceField;
+    @FXML public Label birthdateLabel;
     @FXML public DatePicker birthdatePicker;
+    @FXML public Label vehicleLabel;
     @FXML public ComboBox<VehicleType> vehicleTypeCombo;
 
     @FXML public Button saveButton;
@@ -45,54 +48,75 @@ public class UserForm implements Initializable {
         // Setup vehicle type combo box
         if (vehicleTypeCombo != null) {
             vehicleTypeCombo.getItems().addAll(VehicleType.values());
-            vehicleTypeCombo.setVisible(false);
         }
 
-        // Setup driver-specific field visibility
-        if (licenceField != null) {
-            licenceField.setVisible(false);
-        }
-        if (birthdatePicker != null) {
-            birthdatePicker.setVisible(false);
-        }
-
-        // Add listeners to radio buttons
+        // Add listeners to radio buttons for dynamic field visibility
         setupRadioButtonListeners();
     }
 
     private void setupRadioButtonListeners() {
         if (userRadio != null) {
             userRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleDriverFields(false);
+                if (newVal) {
+                    toggleDriverFields(false);
+                    addressField.setDisable(true);
+                }
             });
         }
 
         if (restaurantRadio != null) {
             restaurantRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleDriverFields(false);
+                if (newVal) {
+                    toggleDriverFields(false);
+                    addressField.setDisable(false);
+                }
             });
         }
 
         if (clientRadio != null) {
             clientRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleDriverFields(false);
+                if (newVal) {
+                    toggleDriverFields(false);
+                    addressField.setDisable(false);
+                }
             });
         }
 
         if (driverRadio != null) {
             driverRadio.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) toggleDriverFields(true);
+                if (newVal) {
+                    toggleDriverFields(true);
+                    addressField.setDisable(false);
+                }
             });
         }
     }
 
     private void toggleDriverFields(boolean show) {
-        if (licenceField != null) licenceField.setVisible(show);
-        if (birthdatePicker != null) birthdatePicker.setVisible(show);
-        if (vehicleTypeCombo != null) vehicleTypeCombo.setVisible(show);
-
-        if (!show) {
-            addressField.setDisable(false);
+        // Toggle visibility and managed property for driver-specific fields
+        if (licenceLabel != null) {
+            licenceLabel.setVisible(show);
+            licenceLabel.setManaged(show);
+        }
+        if (licenceField != null) {
+            licenceField.setVisible(show);
+            licenceField.setManaged(show);
+        }
+        if (birthdateLabel != null) {
+            birthdateLabel.setVisible(show);
+            birthdateLabel.setManaged(show);
+        }
+        if (birthdatePicker != null) {
+            birthdatePicker.setVisible(show);
+            birthdatePicker.setManaged(show);
+        }
+        if (vehicleLabel != null) {
+            vehicleLabel.setVisible(show);
+            vehicleLabel.setManaged(show);
+        }
+        if (vehicleTypeCombo != null) {
+            vehicleTypeCombo.setVisible(show);
+            vehicleTypeCombo.setManaged(show);
         }
     }
 
@@ -174,7 +198,7 @@ public class UserForm implements Initializable {
             genericHibernate.create(newUser);
 
             FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Success", "User Created",
-                    "User has been created successfully.");
+                    "User has been created successfully. You can now log in.");
 
             closeWindow();
 
@@ -222,12 +246,12 @@ public class UserForm implements Initializable {
     }
 
     private User buildUserFromInput() {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-        String name = nameField.getText();
-        String surname = surnameField.getText();
-        String phone = phoneField.getText();
-        String address = addressField.getText();
+        String username = usernameField.getText().trim();
+        String password = passwordField.getText().trim();
+        String name = nameField.getText().trim();
+        String surname = surnameField.getText().trim();
+        String phone = phoneField.getText().trim();
+        String address = addressField.getText().trim();
         boolean isAdmin = isAdminCheck.isSelected();
 
         User user = null;
@@ -239,13 +263,13 @@ public class UserForm implements Initializable {
         } else if (clientRadio.isSelected()) {
             user = new BasicUser(username, password, name, surname, phone, address);
         } else if (driverRadio.isSelected()) {
-            String licence = licenceField.getText();
+            String licence = licenceField.getText().trim();
             LocalDate birthdate = birthdatePicker.getValue();
             VehicleType vehicleType = vehicleTypeCombo.getValue();
 
             if (licence.isEmpty() || birthdate == null || vehicleType == null) {
                 FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Missing Driver Information",
-                        "Please fill in all driver-specific fields.");
+                        "Please fill in all driver-specific fields (License, Birth Date, and Vehicle Type).");
                 return null;
             }
 
@@ -275,13 +299,13 @@ public class UserForm implements Initializable {
 
         if (nameField.getText().trim().isEmpty()) {
             FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Missing Information",
-                    "Please enter a name.");
+                    "Please enter a first name.");
             return false;
         }
 
         if (surnameField.getText().trim().isEmpty()) {
             FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Missing Information",
-                    "Please enter a surname.");
+                    "Please enter a last name.");
             return false;
         }
 
@@ -299,10 +323,40 @@ public class UserForm implements Initializable {
             return false;
         }
 
+        // Additional validation for driver fields
+        if (driverRadio.isSelected()) {
+            if (licenceField.getText().trim().isEmpty()) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Missing Information",
+                        "Please enter a license number.");
+                return false;
+            }
+
+            if (birthdatePicker.getValue() == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Missing Information",
+                        "Please select a birth date.");
+                return false;
+            }
+
+            if (vehicleTypeCombo.getValue() == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Missing Information",
+                        "Please select a vehicle type.");
+                return false;
+            }
+
+            // Validate age (must be at least 18 years old)
+            LocalDate minDate = LocalDate.now().minusYears(18);
+            if (birthdatePicker.getValue().isAfter(minDate)) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Validation Error", "Age Requirement",
+                        "Driver must be at least 18 years old.");
+                return false;
+            }
+        }
+
         return true;
     }
 
-    private void closeWindow() {
+    @FXML
+    public void closeWindow() {
         if (usernameField != null && usernameField.getScene() != null) {
             usernameField.getScene().getWindow().hide();
         }
