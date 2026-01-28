@@ -1,139 +1,250 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.ContextMenu?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="470.0" prefWidth="823.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.courseprifs.fxControllers.MainForm">
-   <children>
-      <TabPane fx:id="tabsPane" prefHeight="401.0" prefWidth="601.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <tabs>
-          <Tab fx:id="userTab" onSelectionChanged="#reloadTableData" text="User management">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView fx:id="userTable" layoutX="1.0" layoutY="6.0" prefHeight="180.0" prefWidth="594.0">
-                          <columns>
-                            <TableColumn fx:id="idCol" prefWidth="56.79998779296875" text="Id" />
-                            <TableColumn fx:id="userTypeCol" prefWidth="69.60003662109375" text="User type" />
-                              <TableColumn fx:id="loginCol" prefWidth="75.20001220703125" text="Login" />
-                              <TableColumn fx:id="passCol" prefWidth="100.0" text="Password" />
-                              <TableColumn fx:id="nameCol" prefWidth="75.0" text="Name" />
-                              <TableColumn fx:id="surnameCol" prefWidth="75.0" text="Surname" />
-                              <TableColumn fx:id="addrCol" prefWidth="54.39996337890625" text="Address" />
-                              <TableColumn fx:id="dummyCol" prefWidth="96.00006103515625" text="Action" />
-                          </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-          <Tab fx:id="managementTab" onSelectionChanged="#reloadTableData" text="Orders management">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="ordersList" layoutX="14.0" layoutY="65.0" onMouseClicked="#loadOrderInfo" prefHeight="288.0" prefWidth="201.0">
-                           <contextMenu>
-                              <ContextMenu>
-                                <items>
-                                  <MenuItem mnemonicParsing="false" onAction="#deleteOrder" text="Delete" />
-                                </items>
-                              </ContextMenu>
-                           </contextMenu></ListView>
-                        <Button layoutX="248.0" layoutY="320.0" mnemonicParsing="false" onAction="#createOrder" text="New" />
-                        <Button layoutX="371.0" layoutY="320.0" mnemonicParsing="false" onAction="#updateOrder" text="Update" />
-                        <Button layoutX="504.0" layoutY="320.0" mnemonicParsing="false" onAction="#deleteOrder" text="Delete" />
-                        <TextField fx:id="titleField" layoutX="238.0" layoutY="104.0" />
-                        <ComboBox fx:id="clientList" layoutX="237.0" layoutY="65.0" prefWidth="150.0" />
-                        <TextField fx:id="priceField" layoutX="238.0" layoutY="141.0" />
-                        <ComboBox fx:id="restaurantField" layoutX="238.0" layoutY="184.0" onAction="#loadRestaurantMenuForOrder" prefWidth="150.0" />
-                        <ListView fx:id="basicUserList" layoutX="399.0" layoutY="63.0" prefHeight="203.0" prefWidth="91.0" AnchorPane.leftAnchor="399.0" AnchorPane.rightAnchor="110.0" />
-                        <ComboBox fx:id="orderStatusField" layoutX="238.0" layoutY="227.0" prefWidth="150.0" />
-                        <ComboBox fx:id="filterStatus" layoutX="14.0" layoutY="21.0" onAction="#filterOrders" prefWidth="150.0" />
-                        <ComboBox fx:id="filterClients" layoutX="173.0" layoutY="21.0" onAction="#filterOrders" prefWidth="150.0" />
-                        <DatePicker fx:id="filterFrom" layoutX="330.0" layoutY="21.0" onAction="#filterOrders" prefHeight="25.0" prefWidth="126.0" />
-                        <DatePicker fx:id="filterTo" layoutX="462.0" layoutY="21.0" onAction="#filterOrders" prefHeight="25.0" prefWidth="130.0" />
-                        <ListView fx:id="foodList" layoutX="495.0" layoutY="65.0" prefHeight="200.0" prefWidth="90.0" AnchorPane.leftAnchor="495.0" AnchorPane.rightAnchor="14.0" />
-                        <Button layoutX="504.0" layoutY="285.0" mnemonicParsing="false" onAction="#loadChatForm" text="View chat" />
-                     </children></AnchorPane>
-            </content>
-          </Tab>
-            <Tab fx:id="foodTab" onSelectionChanged="#reloadTableData" text="Food management">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="cuisineList" layoutX="14.0" layoutY="33.0" prefHeight="327.0" prefWidth="203.0">
-                           <contextMenu>
-                              <ContextMenu>
-                                <items>
-                                  <MenuItem mnemonicParsing="false" text="Delete" />
-                                </items>
-                              </ContextMenu>
-                           </contextMenu></ListView>
-                        <Label layoutX="14.0" layoutY="14.0" text="Menu:" />
-                        <TextField fx:id="titleCuisineField" layoutX="236.0" layoutY="33.0" prefHeight="25.0" prefWidth="200.0" />
-                        <TextArea fx:id="ingredientsField" layoutX="236.0" layoutY="74.0" prefHeight="150.0" prefWidth="200.0" />
-                        <ListView fx:id="restaurantList" layoutX="236.0" layoutY="233.0" onMouseClicked="#loadRestaurantMenu" prefHeight="92.0" prefWidth="200.0" />
-                        <Button layoutX="236.0" layoutY="332.0" mnemonicParsing="false" onAction="#createNewMenuItem" text="New" />
-                        <Button layoutX="365.0" layoutY="332.0" mnemonicParsing="false" onAction="#updateMenuItem" text="Update" />
-                        <TextField fx:id="cuisinePriceField" layoutX="445.0" layoutY="33.0" />
-                        <CheckBox fx:id="isDeadly" layoutX="445.0" layoutY="74.0" mnemonicParsing="false" text="Spicy" />
-                        <CheckBox fx:id="isVegan" layoutX="445.0" layoutY="107.0" mnemonicParsing="false" text="Vegan" />
-                     </children></AnchorPane>
-               </content>
-            </Tab>
-            <Tab fx:id="altTab" onSelectionChanged="#reloadTableData" text="ALternative User management">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="399.0" prefWidth="726.0">
-                     <children>
-                        <ListView fx:id="userListField" layoutX="14.0" layoutY="14.0" prefHeight="168.0" prefWidth="562.0" />
-                        <Button layoutX="67.0" layoutY="204.0" mnemonicParsing="false" onAction="#addUser" text="Add new user" />
-                        <Button layoutX="259.0" layoutY="204.0" mnemonicParsing="false" onAction="#loadUser" text="Update User" />
-                        <Button layoutX="476.0" layoutY="204.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete User" />
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-            <Tab fx:id="chatTab" onSelectionChanged="#reloadTableData" text="Chat management">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="allChats" layoutX="14.0" layoutY="21.0" onMouseClicked="#loadChatMessages" prefHeight="409.0" prefWidth="207.0">
-                           <contextMenu>
-                              <ContextMenu>
-                                <items>
-                                  <MenuItem mnemonicParsing="false" onAction="#deleteChat" text="Delete chat" />
-                                </items>
-                              </ContextMenu>
-                           </contextMenu>
-                        </ListView>
-                        <ListView fx:id="chatMessages" layoutX="238.0" layoutY="22.0" prefHeight="407.0" prefWidth="185.0">
-                           <contextMenu>
-                              <ContextMenu>
-                                <items>
-                                  <MenuItem mnemonicParsing="false" onAction="#deleteMessage" text="Delete message" />
-                                </items>
-                              </ContextMenu>
-                           </contextMenu>
-                        </ListView>
-                        <Button layoutX="587.0" layoutY="395.0" mnemonicParsing="false" text="Update dat" />
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-        </tabs>
-      </TabPane>
-   </children>
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.courseprifs.fxControllers.MainForm">
+    <children>
+        <TabPane fx:id="tabsPane" prefHeight="600.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <tabs>
+                <!-- USER MANAGEMENT TAB -->
+                <Tab fx:id="userTab" onSelectionChanged="#reloadTableData" text="User Management">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <!-- Search Section -->
+                                <HBox layoutX="14.0" layoutY="14.0" spacing="10.0">
+                                    <children>
+                                        <TextField fx:id="searchLoginField" promptText="Login" prefWidth="120.0"/>
+                                        <TextField fx:id="searchNameField" promptText="First Name" prefWidth="120.0"/>
+                                        <TextField fx:id="searchSurnameField" promptText="Last Name" prefWidth="120.0"/>
+                                        <ComboBox fx:id="searchRoleField" promptText="Role" prefWidth="120.0"/>
+                                        <Button text="Search" onAction="#searchUsers"/>
+                                        <Button text="Clear" onAction="#clearUserSearch"/>
+                                        <Button text="Add User" onAction="#addNewUser"/>
+                                    </children>
+                                </HBox>
+
+                                <!-- User Table -->
+                                <TableView fx:id="userTable" layoutX="14.0" layoutY="60.0" prefHeight="480.0" prefWidth="872.0">
+                                    <columns>
+                                        <TableColumn fx:id="idCol" prefWidth="50.0" text="ID" />
+                                        <TableColumn fx:id="userTypeCol" prefWidth="90.0" text="Type" />
+                                        <TableColumn fx:id="loginCol" prefWidth="100.0" text="Login" />
+                                        <TableColumn fx:id="passCol" prefWidth="100.0" text="Password" />
+                                        <TableColumn fx:id="nameCol" prefWidth="100.0" text="Name" />
+                                        <TableColumn fx:id="surnameCol" prefWidth="100.0" text="Surname" />
+                                        <TableColumn fx:id="phoneCol" prefWidth="110.0" text="Phone" />
+                                        <TableColumn fx:id="addrCol" prefWidth="130.0" text="Address" />
+                                        <TableColumn fx:id="actionCol" prefWidth="92.0" text="Action" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <!-- ORDER MANAGEMENT TAB -->
+                <Tab fx:id="managementTab" onSelectionChanged="#reloadTableData" text="Order Management">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <!-- Filter Section -->
+                                <HBox layoutX="14.0" layoutY="14.0" spacing="10.0">
+                                    <children>
+                                        <ComboBox fx:id="filterStatus" promptText="Status" prefWidth="120.0"/>
+                                        <ComboBox fx:id="filterRestaurant" promptText="Restaurant" prefWidth="150.0"/>
+                                        <DatePicker fx:id="filterFrom" promptText="From Date" prefWidth="130.0"/>
+                                        <DatePicker fx:id="filterTo" promptText="To Date" prefWidth="130.0"/>
+                                        <Button text="Filter" onAction="#filterOrders"/>
+                                        <Button text="Clear" onAction="#clearOrderFilters"/>
+                                    </children>
+                                </HBox>
+
+                                <!-- Orders List -->
+                                <ListView fx:id="ordersList" layoutX="14.0" layoutY="60.0" onMouseClicked="#loadOrderInfo" prefHeight="480.0" prefWidth="280.0">
+                                    <contextMenu>
+                                        <ContextMenu>
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" onAction="#deleteOrder" text="Delete" />
+                                                <MenuItem mnemonicParsing="false" onAction="#loadChatForm" text="View Chat" />
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </ListView>
+
+                                <!-- Order Details Form -->
+                                <GridPane layoutX="310.0" layoutY="60.0" hgap="10.0" vgap="10.0" prefWidth="570.0">
+                                    <children>
+                                        <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                        <TextField fx:id="titleField" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="200.0"/>
+
+                                        <Label text="Customer:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                        <ComboBox fx:id="clientList" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="200.0"/>
+
+                                        <Label text="Restaurant:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                        <ComboBox fx:id="restaurantField" GridPane.rowIndex="2" GridPane.columnIndex="1" onAction="#loadRestaurantMenuForOrder" prefWidth="200.0"/>
+
+                                        <Label text="Price:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                                        <TextField fx:id="priceField" GridPane.rowIndex="3" GridPane.columnIndex="1" editable="false" prefWidth="200.0"/>
+
+                                        <Label text="Status:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                                        <ComboBox fx:id="orderStatusField" GridPane.rowIndex="4" GridPane.columnIndex="1" prefWidth="200.0"/>
+
+                                        <Label text="Driver:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                                        <ComboBox fx:id="driverField" GridPane.rowIndex="5" GridPane.columnIndex="1" prefWidth="200.0"/>
+
+                                        <Label text="Menu Items:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                                        <ListView fx:id="foodList" GridPane.rowIndex="6" GridPane.columnIndex="1" prefHeight="150.0" prefWidth="200.0" GridPane.rowSpan="4"/>
+
+                                        <HBox spacing="10.0" GridPane.rowIndex="10" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                                            <children>
+                                                <Button text="Create Order" onAction="#createOrder"/>
+                                                <Button text="Update Order" onAction="#updateOrder"/>
+                                                <Button text="Delete Order" onAction="#deleteOrder"/>
+                                                <Button text="View Chat" onAction="#loadChatForm"/>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="100.0" prefWidth="100.0"/>
+                                        <ColumnConstraints minWidth="200.0" prefWidth="400.0"/>
+                                    </columnConstraints>
+                                </GridPane>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <!-- CUISINE MANAGEMENT TAB -->
+                <Tab fx:id="foodTab" onSelectionChanged="#reloadTableData" text="Cuisine Management">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <!-- Restaurant Selection -->
+                                <Label layoutX="14.0" layoutY="14.0" text="Select Restaurant:"/>
+                                <ListView fx:id="restaurantList" layoutX="14.0" layoutY="40.0" onMouseClicked="#loadRestaurantMenu" prefHeight="150.0" prefWidth="250.0"/>
+
+                                <!-- Menu Items List -->
+                                <Label layoutX="14.0" layoutY="205.0" text="Menu Items:"/>
+                                <ListView fx:id="cuisineList" layoutX="14.0" layoutY="230.0" onMouseClicked="#loadCuisineInfo" prefHeight="310.0" prefWidth="250.0">
+                                    <contextMenu>
+                                        <ContextMenu>
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" onAction="#deleteMenuItem" text="Delete" />
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </ListView>
+
+                                <!-- Cuisine Form -->
+                                <GridPane layoutX="280.0" layoutY="40.0" hgap="10.0" vgap="15.0">
+                                    <children>
+                                        <Label text="Dish Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                        <TextField fx:id="titleCuisineField" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="300.0"/>
+
+                                        <Label text="Ingredients:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                        <TextArea fx:id="ingredientsField" GridPane.rowIndex="1" GridPane.columnIndex="1" prefHeight="100.0" prefWidth="300.0"/>
+
+                                        <Label text="Price:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                        <TextField fx:id="cuisinePriceField" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="150.0"/>
+
+                                        <CheckBox fx:id="isSpicy" text="Spicy" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                                        <CheckBox fx:id="isVegan" text="Vegan" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                                        <HBox spacing="10.0" GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                                            <children>
+                                                <Button text="Create Item" onAction="#createNewMenuItem"/>
+                                                <Button text="Update Item" onAction="#updateMenuItem"/>
+                                                <Button text="Delete Item" onAction="#deleteMenuItem"/>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="100.0" prefWidth="100.0"/>
+                                        <ColumnConstraints minWidth="300.0" prefWidth="300.0"/>
+                                    </columnConstraints>
+                                </GridPane>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <!-- CHAT MANAGEMENT TAB -->
+                <Tab fx:id="chatTab" onSelectionChanged="#reloadTableData" text="Chat Management">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="14.0" layoutY="14.0" text="All Chats:"/>
+                                <ListView fx:id="allChats" layoutX="14.0" layoutY="40.0" onMouseClicked="#loadChatMessages" prefHeight="500.0" prefWidth="300.0">
+                                    <contextMenu>
+                                        <ContextMenu>
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" onAction="#deleteChat" text="Delete Chat" />
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </ListView>
+
+                                <Label layoutX="330.0" layoutY="14.0" text="Messages:"/>
+                                <ListView fx:id="chatMessages" layoutX="330.0" layoutY="40.0" prefHeight="500.0" prefWidth="550.0">
+                                    <contextMenu>
+                                        <ContextMenu>
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" onAction="#deleteMessage" text="Delete Message" />
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </ListView>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <!-- REVIEW MANAGEMENT TAB -->
+                <Tab fx:id="reviewTab" onSelectionChanged="#reloadTableData" text="Review Management">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="14.0" layoutY="14.0" text="All Reviews:"/>
+                                <ListView fx:id="reviewList" layoutX="14.0" layoutY="40.0" prefHeight="500.0" prefWidth="400.0"/>
+
+                                <GridPane layoutX="430.0" layoutY="40.0" hgap="10.0" vgap="15.0">
+                                    <children>
+                                        <Label text="Reviewer:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                        <ComboBox fx:id="reviewCommentOwner" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="200.0"/>
+
+                                        <Label text="Reviewed User:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                        <ComboBox fx:id="reviewFeedbackUser" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="200.0"/>
+
+                                        <Label text="Review Text:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                        <TextArea fx:id="reviewTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" prefHeight="150.0" prefWidth="200.0"/>
+
+                                        <Label text="Rating:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                                        <VBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                                            <children>
+                                                <Slider fx:id="ratingSlider" min="1" max="5" value="5" showTickLabels="true" showTickMarks="true" majorTickUnit="1" minorTickCount="0" snapToTicks="true"/>
+                                                <Label fx:id="ratingLabel" text="Rating: 5"/>
+                                            </children>
+                                        </VBox>
+
+                                        <HBox spacing="10.0" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                                            <children>
+                                                <Button text="Create Review" onAction="#createReview"/>
+                                                <Button text="Delete Review" onAction="#deleteReview"/>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="120.0" prefWidth="120.0"/>
+                                        <ColumnConstraints minWidth="200.0" prefWidth="300.0"/>
+                                    </columnConstraints>
+                                </GridPane>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
 </AnchorPane>

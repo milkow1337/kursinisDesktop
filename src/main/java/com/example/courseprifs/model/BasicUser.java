@@ -16,18 +16,30 @@ import java.util.List;
 @Entity
 public class BasicUser extends User{
     protected String address;
+
+    // Loyalty points system
+    protected int loyaltyPoints = 0;
+
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     protected List<FoodOrder> myOrders;
+
     @OneToMany(mappedBy = "commentOwner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     protected List<Review> myReviews;
+
     @OneToMany(mappedBy = "feedbackUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     protected List<Review> feedback;
 
     public BasicUser(String login, String password, String name, String surname, String phoneNumber, String address) {
         super(login, password, name, surname, phoneNumber);
         this.address = address;
+        this.loyaltyPoints = 0;
         this.myReviews = new ArrayList<>();
         this.feedback = new ArrayList<>();
         this.myOrders = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s (Points: %d)", name, surname, loyaltyPoints);
     }
 }

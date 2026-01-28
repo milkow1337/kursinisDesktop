@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -55,10 +56,11 @@ public class LoginForm {
         userForm.setData(entityManagerFactory, null, false);
 
         Scene scene = new Scene(parent);
-        Stage stage = (Stage) loginField.getScene().getWindow();
-        stage.setTitle("Hello!");
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Register New User");
         stage.setScene(scene);
-        stage.show();
+        stage.showAndWait();
     }
 
 

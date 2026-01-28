@@ -18,18 +18,28 @@ public class FoodOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
     private Double price;
+
     @ManyToOne
     private BasicUser buyer;
+
+    @ManyToOne
+    private Driver driver; // Added driver assignment
+
     @ManyToMany
     private List<Cuisine> cuisineList;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
     private Chat chat;
+
     @ManyToOne
     private Restaurant restaurant;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
     private LocalDate dateCreated;
     private LocalDate dateUpdated;
 
@@ -38,6 +48,8 @@ public class FoodOrder {
         this.price = price;
         this.buyer = buyer;
         this.restaurant = restaurant;
+        this.orderStatus = OrderStatus.PLACED;
+        this.dateCreated = LocalDate.now();
     }
 
     public FoodOrder(String name, Double price, BasicUser buyer, List<Cuisine> cuisineList, Restaurant restaurant) {
@@ -46,11 +58,12 @@ public class FoodOrder {
         this.buyer = buyer;
         this.cuisineList = cuisineList;
         this.restaurant = restaurant;
-        this.orderStatus = OrderStatus.PENDING;
+        this.orderStatus = OrderStatus.PLACED;
+        this.dateCreated = LocalDate.now();
     }
 
     @Override
     public String toString() {
-        return name + " " + price;
+        return String.format("#%d - %s (€%.2f) - %s", id, name, price, orderStatus);
     }
 }
