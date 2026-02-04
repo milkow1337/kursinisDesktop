@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class MainForm implements Initializable {
-    //<editor-fold desc="FXML User Tab Elements">
+    //user tab
     @FXML public Tab userTab;
     @FXML public TableView<UserTableParameters> userTable;
     @FXML public TableColumn<UserTableParameters, Integer> idCol;
@@ -39,16 +39,15 @@ public class MainForm implements Initializable {
     @FXML public TableColumn<UserTableParameters, String> addrCol;
     @FXML public TableColumn<UserTableParameters, Void> actionCol;
 
-    // User search fields
+    // search
     @FXML public TextField searchLoginField;
     @FXML public TextField searchNameField;
     @FXML public TextField searchSurnameField;
     @FXML public ComboBox<String> searchRoleField;
 
     private ObservableList<UserTableParameters> userData = FXCollections.observableArrayList();
-    //</editor-fold>
 
-    //<editor-fold desc="FXML Order Tab Elements">
+    //order
     @FXML public Tab managementTab;
     @FXML public ListView<FoodOrder> ordersList;
     @FXML public TextField titleField;
@@ -64,9 +63,8 @@ public class MainForm implements Initializable {
     @FXML public ComboBox<Restaurant> filterRestaurant;
     @FXML public DatePicker filterFrom;
     @FXML public DatePicker filterTo;
-    //</editor-fold>
 
-    //<editor-fold desc="FXML Cuisine Tab Elements">
+    //cusine
     @FXML public Tab foodTab;
     @FXML public TextField titleCuisineField;
     @FXML public TextArea ingredientsField;
@@ -75,15 +73,13 @@ public class MainForm implements Initializable {
     @FXML public CheckBox isSpicy;
     @FXML public CheckBox isVegan;
     @FXML public ListView<Cuisine> cuisineList;
-    //</editor-fold>
 
-    //<editor-fold desc="FXML Chat Tab Elements">
+    //chat
     @FXML public Tab chatTab;
     @FXML public ListView<Chat> allChats;
     @FXML public ListView<Review> chatMessages;
-    //</editor-fold>
 
-    //<editor-fold desc="FXML Review Tab Elements">
+    //review
     @FXML public Tab reviewTab;
     @FXML public ListView<Review> reviewList;
     @FXML public ComboBox<BasicUser> reviewCommentOwner;
@@ -91,7 +87,6 @@ public class MainForm implements Initializable {
     @FXML public TextArea reviewTextField;
     @FXML public Slider ratingSlider;
     @FXML public Label ratingLabel;
-    //</editor-fold>
 
     private EntityManagerFactory entityManagerFactory;
     private CustomHibernate customHibernate;
@@ -112,32 +107,26 @@ public class MainForm implements Initializable {
         userTypeCol.setCellValueFactory(new PropertyValueFactory<>("userType"));
         loginCol.setCellValueFactory(new PropertyValueFactory<>("login"));
 
-        // Editable password column
         passCol.setCellValueFactory(new PropertyValueFactory<>("password"));
         passCol.setCellFactory(TextFieldTableCell.forTableColumn());
         passCol.setOnEditCommit(event -> updateUserField(event, "password"));
 
-        // Editable name column
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
         nameCol.setOnEditCommit(event -> updateUserField(event, "name"));
 
-        // Editable surname column
         surnameCol.setCellValueFactory(new PropertyValueFactory<>("surname"));
         surnameCol.setCellFactory(TextFieldTableCell.forTableColumn());
         surnameCol.setOnEditCommit(event -> updateUserField(event, "surname"));
 
-        // Editable phone column
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
         phoneCol.setCellFactory(TextFieldTableCell.forTableColumn());
         phoneCol.setOnEditCommit(event -> updateUserField(event, "phone"));
 
-        // Editable address column
         addrCol.setCellValueFactory(new PropertyValueFactory<>("address"));
         addrCol.setCellFactory(TextFieldTableCell.forTableColumn());
         addrCol.setOnEditCommit(event -> updateUserField(event, "address"));
 
-        // Add delete button column
         addDeleteButtonToTable();
     }
 
@@ -243,16 +232,13 @@ public class MainForm implements Initializable {
 
     private void setUserFormVisibility() {
         if (currentUser instanceof Restaurant) {
-            // Restaurant users cannot see user management tab
             if (userTab != null) {
                 userTab.setDisable(true);
             }
-            // Chat tab is enabled for Restaurants, but editing is disabled
             if (chatTab != null) {
                 chatTab.setDisable(false);
             }
             
-            // Disable delete options in context menus for Restaurants
             if (allChats != null && allChats.getContextMenu() != null) {
                 allChats.getContextMenu().getItems().forEach(item -> item.setDisable(true));
             }
@@ -260,12 +246,10 @@ public class MainForm implements Initializable {
                 chatMessages.getContextMenu().getItems().forEach(item -> item.setDisable(true));
             }
 
-            // Set Order Management as default tab for Restaurant
             if (managementTab != null) {
                 managementTab.getTabPane().getSelectionModel().select(managementTab);
             }
         } else if (!(currentUser.isAdmin())) {
-            // Non-admin users have limited access
             if (userTab != null) {
                 userTab.setDisable(true);
             }
@@ -289,7 +273,7 @@ public class MainForm implements Initializable {
         }
     }
 
-    //<editor-fold desc="User Tab Functionality">
+    //user tab
     public void reloadTableData() {
         if (customHibernate == null) {
             return;
@@ -372,12 +356,10 @@ public class MainForm implements Initializable {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
 
-        // Reload data after closing
         loadUserData();
     }
-    //</editor-fold>
 
-    //<editor-fold desc="Order Tab Functionality">
+    //order tab
     private void loadOrderData() {
         clearAllOrderFields();
 
@@ -390,10 +372,9 @@ public class MainForm implements Initializable {
         orderStatusField.getItems().clear();
         orderStatusField.getItems().addAll(OrderStatus.values());
 
-        // Load filter options
-        filterStatus.getItems().add(null); // For "All"
+        filterStatus.getItems().add(null);
         filterStatus.getItems().addAll(OrderStatus.values());
-        filterRestaurant.getItems().add(null); // For "All"
+        filterRestaurant.getItems().add(null);
         filterRestaurant.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
     }
 
@@ -425,12 +406,10 @@ public class MainForm implements Initializable {
 
             List<Cuisine> selectedCuisines = foodList.getSelectionModel().getSelectedItems();
 
-            // Calculate base price
             double basePrice = selectedCuisines.stream()
                     .mapToDouble(Cuisine::getPrice)
                     .sum();
 
-            // Apply dynamic pricing if needed
             double finalPrice = customHibernate.calculateDynamicPrice(basePrice);
 
             FoodOrder foodOrder = new FoodOrder(
@@ -493,21 +472,18 @@ public class MainForm implements Initializable {
                 return;
             }
 
-            // Check if order can be modified
             if (selectedOrder.getOrderStatus() == OrderStatus.COMPLETED) {
                 FxUtils.generateAlert(Alert.AlertType.WARNING, "Warning", "Order Completed",
                         "Cannot modify completed orders.");
                 return;
             }
 
-            // Update order details
             selectedOrder.setRestaurant(restaurantField.getValue());
             selectedOrder.setName(titleField.getText());
             selectedOrder.setOrderStatus(orderStatusField.getValue());
             selectedOrder.setBuyer(clientList.getValue());
             selectedOrder.setDateUpdated(LocalDate.now());
 
-            // Recalculate price if cuisines changed
             List<Cuisine> selectedCuisines = foodList.getSelectionModel().getSelectedItems();
             if (!selectedCuisines.isEmpty()) {
                 double basePrice = selectedCuisines.stream()
@@ -517,7 +493,6 @@ public class MainForm implements Initializable {
                 selectedOrder.setCuisineList(selectedCuisines);
             }
 
-            // Assign driver if selected
             if (driverField.getValue() != null && selectedOrder.getOrderStatus() != OrderStatus.PLACED) {
                 selectedOrder.setDriver(driverField.getValue());
             }
@@ -571,26 +546,21 @@ public class MainForm implements Initializable {
             return;
         }
 
-        // Populate fields
         titleField.setText(selectedOrder.getName());
         priceField.setText(selectedOrder.getPrice().toString());
 
-        // Select customer
         clientList.getItems().stream()
                 .filter(c -> c.getId() == selectedOrder.getBuyer().getId())
                 .findFirst()
                 .ifPresent(u -> clientList.getSelectionModel().select(u));
 
-        // Select restaurant
         restaurantField.getItems().stream()
                 .filter(r -> r.getId() == selectedOrder.getRestaurant().getId())
                 .findFirst()
                 .ifPresent(r -> restaurantField.getSelectionModel().select(r));
 
-        // Select order status
         orderStatusField.setValue(selectedOrder.getOrderStatus());
 
-        // Select driver if assigned
         if (selectedOrder.getDriver() != null) {
             driverField.getItems().stream()
                     .filter(d -> d.getId() == selectedOrder.getDriver().getId())
@@ -598,10 +568,8 @@ public class MainForm implements Initializable {
                     .ifPresent(d -> driverField.getSelectionModel().select(d));
         }
 
-        // Load restaurant menu
         loadRestaurantMenuForOrder();
 
-        // Disable fields if order is completed
         disableFoodOrderFields();
     }
 
@@ -705,7 +673,14 @@ public class MainForm implements Initializable {
     //<editor-fold desc="Cuisine Tab Functionality">
     private void loadCuisineData() {
         clearAllCuisineFields();
-        restaurantList.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
+        
+        if (currentUser instanceof Restaurant) {
+            restaurantList.getItems().add((Restaurant) currentUser);
+            restaurantList.getSelectionModel().select((Restaurant) currentUser);
+            loadRestaurantMenu();
+        } else {
+            restaurantList.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
+        }
     }
 
     private void clearAllCuisineFields() {
@@ -864,7 +839,17 @@ public class MainForm implements Initializable {
     //<editor-fold desc="Chat Tab Functionality">
     private void loadChatData() {
         allChats.getItems().clear();
-        allChats.getItems().addAll(customHibernate.getAllRecords(Chat.class));
+        List<Chat> chats = customHibernate.getAllRecords(Chat.class);
+        
+        if (currentUser instanceof Restaurant) {
+            Restaurant restaurant = (Restaurant) currentUser;
+            chats = chats.stream()
+                    .filter(c -> c.getFoodOrder() != null && 
+                                 c.getFoodOrder().getRestaurant().getId() == restaurant.getId())
+                    .collect(Collectors.toList());
+        }
+        
+        allChats.getItems().addAll(chats);
     }
 
     public void loadChatMessages() {
@@ -942,7 +927,17 @@ public class MainForm implements Initializable {
     //<editor-fold desc="Review Tab Functionality">
     private void loadReviewData() {
         reviewList.getItems().clear();
-        reviewList.getItems().addAll(customHibernate.getAllRecords(Review.class));
+        List<Review> reviews = customHibernate.getAllRecords(Review.class);
+        
+        if (currentUser instanceof Restaurant) {
+            Restaurant restaurant = (Restaurant) currentUser;
+            reviews = reviews.stream()
+                    .filter(r -> (r.getFeedbackUser() != null && r.getFeedbackUser().getId() == restaurant.getId()) ||
+                                 (r.getCommentOwner() != null && r.getCommentOwner().getId() == restaurant.getId()))
+                    .collect(Collectors.toList());
+        }
+        
+        reviewList.getItems().addAll(reviews);
 
         reviewCommentOwner.getItems().clear();
         reviewCommentOwner.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
@@ -950,7 +945,6 @@ public class MainForm implements Initializable {
         reviewFeedbackUser.getItems().clear();
         reviewFeedbackUser.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
 
-        // Initialize rating slider
         if (ratingSlider != null) {
             ratingSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
                 ratingLabel.setText(String.format("Rating: %d", newVal.intValue()));

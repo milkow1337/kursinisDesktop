@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -31,5 +32,16 @@ public class Review {
         this.reviewText = reviewText;
         this.commentOwner = commentOwner;
         this.chat = chat;
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = (dateCreated != null) ? dateCreated.format(formatter) : "N/A";
+        String reviewer = (commentOwner != null) ? commentOwner.getLogin() : "N/A";
+        String reviewed = (feedbackUser != null) ? feedbackUser.getLogin() : "N/A";
+        
+        return String.format("Date: %s | Rating: %d/5\nFrom: %s | To: %s\nReview: %s",
+                date, rating, reviewer, reviewed, reviewText);
     }
 }

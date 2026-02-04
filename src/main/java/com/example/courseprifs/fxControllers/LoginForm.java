@@ -33,7 +33,6 @@ public class LoginForm {
         User user = customHibernate.getUserByCredentials(loginField.getText(), passwordField.getText());
         
         if (user != null) {
-            // Restriction: Only allow Restaurant and strict User (not BasicUser or Driver)
             if (user instanceof Restaurant || user.getClass().equals(User.class)) {
                 FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("main-form.fxml"));
                 Parent parent = fxmlLoader.load();

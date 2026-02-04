@@ -395,9 +395,7 @@ public class CustomHibernate extends GenericHibernate {
         }
     }
 
-    /**
-     * Recalculate order price when dishes are modified
-     */
+
     public void recalculateOrderPrice(FoodOrder order) {
         try {
             entityManager = entityManagerFactory.createEntityManager();
@@ -433,9 +431,7 @@ public class CustomHibernate extends GenericHibernate {
         }
     }
 
-    /**
-     * Lock chat when order is completed
-     */
+
     public boolean isChatLocked(Chat chat) {
         try {
             entityManager = entityManagerFactory.createEntityManager();

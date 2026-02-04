@@ -31,10 +31,10 @@ public class Restaurant extends BasicUser {
         this.closingTime = closingTime;
     }
     
-    // Keeping the old constructor for compatibility if needed, but ideally should be updated or removed
-    public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address) {
-        super(login, password, name, surname, phoneNumber, address);
-    }
+    //old constructor
+    //public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address) {
+    //    super(login, password, name, surname, phoneNumber, address);
+    //}
 
     @Override
     public String toString() {

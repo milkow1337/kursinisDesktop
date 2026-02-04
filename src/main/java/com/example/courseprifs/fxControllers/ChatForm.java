@@ -28,7 +28,6 @@ public class ChatForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialize UI components
         if (chatStatusLabel != null) {
             chatStatusLabel.setText("");
         }
@@ -46,18 +45,15 @@ public class ChatForm implements Initializable {
     }
 
     private void loadOrCreateChat() {
-        // Reload the order to get the latest chat information
         FoodOrder order = customHibernate.getEntityById(FoodOrder.class, currentFoodOrder.getId());
 
         if (order.getChat() == null) {
-            // Create new chat for this order
             Chat chat = new Chat(
                     "Order Chat #" + order.getId(),
                     order
             );
             customHibernate.create(chat);
 
-            // Reload order to get the created chat
             order = customHibernate.getEntityById(FoodOrder.class, currentFoodOrder.getId());
         }
 
@@ -70,7 +66,6 @@ public class ChatForm implements Initializable {
             return;
         }
 
-        // Reload chat to get latest messages
         Chat freshChat = customHibernate.getEntityById(Chat.class, currentChat.getId());
         messageList.getItems().clear();
 
@@ -89,32 +84,26 @@ public class ChatForm implements Initializable {
             chatStatusLabel.setText("⚠️ Chat is locked - Order completed");
             chatStatusLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
         } else {
-            // Check user permissions
             checkUserPermissions();
         }
     }
 
     private void checkUserPermissions() {
-        // Only participants can send messages
         boolean canParticipate = false;
 
         if (currentUser instanceof BasicUser) {
-            // Customer can participate if they are the buyer
             BasicUser basicUser = (BasicUser) currentUser;
             canParticipate = currentFoodOrder.getBuyer() != null &&
                     currentFoodOrder.getBuyer().getId() == basicUser.getId();
         } else if (currentUser instanceof Restaurant) {
-            // Restaurant can participate if they are the order's restaurant
             Restaurant restaurant = (Restaurant) currentUser;
             canParticipate = currentFoodOrder.getRestaurant() != null &&
                     currentFoodOrder.getRestaurant().getId() == restaurant.getId();
         } else if (currentUser instanceof Driver) {
-            // Driver can participate if they are assigned to this order
             Driver driver = (Driver) currentUser;
             canParticipate = currentFoodOrder.getDriver() != null &&
                     currentFoodOrder.getDriver().getId() == driver.getId();
         } else if (currentUser.isAdmin()) {
-            // Admin can view but has limited actions
             messageBody.setDisable(true);
             sendButton.setDisable(true);
             chatStatusLabel.setText("ℹ️ Admin mode - Read only");
@@ -144,7 +133,7 @@ public class ChatForm implements Initializable {
         }
 
         try {
-            // Create new message
+            // new message
             Review message = new Review(
                     messageText,
                     (BasicUser) currentUser,
@@ -154,11 +143,9 @@ public class ChatForm implements Initializable {
 
             customHibernate.create(message);
 
-            // Clear input and reload messages
             messageBody.clear();
             loadMessages();
 
-            // Scroll to bottom
             messageList.scrollTo(messageList.getItems().size() - 1);
 
         } catch (ClassCastException e) {
@@ -177,7 +164,6 @@ public class ChatForm implements Initializable {
 
     @FXML
     public void closeChat() {
-        // Close the window
         if (messageList != null && messageList.getScene() != null) {
             messageList.getScene().getWindow().hide();
         }
